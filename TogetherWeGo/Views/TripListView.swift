@@ -2,6 +2,7 @@ import SwiftUI
 
 struct TripListView: View {
     @Environment(TripStore.self) private var store
+    @State private var showingNewTrip = false
 
     var body: some View {
         NavigationStack {
@@ -18,6 +19,16 @@ struct TripListView: View {
                 .accessibilityElement(children: .combine)
             }
             .navigationTitle("My Trips")
+            .toolbar {
+                Button {
+                    showingNewTrip = true
+                } label: {
+                    Label("New Trip", systemImage: "plus")
+                }
+            }
+            .sheet(isPresented: $showingNewTrip) {
+                NewTripView()
+            }
         }
     }
 }
