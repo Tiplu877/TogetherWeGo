@@ -2,6 +2,7 @@ import SwiftUI
 
 struct TripListView: View {
     @Environment(TripStore.self) private var store
+    @Environment(AuthViewModel.self) private var auth
     @State private var showingNewTrip = false
 
     var body: some View {
@@ -20,10 +21,17 @@ struct TripListView: View {
             }
             .navigationTitle("My Trips")
             .toolbar {
-                Button {
-                    showingNewTrip = true
-                } label: {
-                    Label("New Trip", systemImage: "plus")
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Sign Out") {
+                        auth.signOut()
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showingNewTrip = true
+                    } label: {
+                        Label("New Trip", systemImage: "plus")
+                    }
                 }
             }
             .sheet(isPresented: $showingNewTrip) {
@@ -36,4 +44,5 @@ struct TripListView: View {
 #Preview {
     TripListView()
         .environment(TripStore())
+        .environment(AuthViewModel(loadCurrentUser: false))
 }

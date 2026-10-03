@@ -3,6 +3,7 @@ import SwiftUI
 struct NewTripView: View {
     @Environment(TripStore.self) private var store
     @Environment(\.dismiss) private var dismiss
+    @Environment(AuthViewModel.self) private var auth
     @State private var form = NewTripViewModel()
 
     var body: some View {
@@ -49,8 +50,8 @@ struct NewTripView: View {
     }
 
     private func save() {
-        // "me" is a placeholder until we add Firebase login in Step 4
-        if let trip = form.makeTrip(creatorID: "me") {
+        guard let userID = auth.userID else { return }
+        if let trip = form.makeTrip(creatorID: userID) {
             store.addTrip(trip)
             dismiss()
         }
@@ -69,4 +70,5 @@ struct NewTripView: View {
 #Preview {
     NewTripView()
         .environment(TripStore())
+        .environment(AuthViewModel(loadCurrentUser: false))
 }
