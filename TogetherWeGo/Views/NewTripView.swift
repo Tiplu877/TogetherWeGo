@@ -69,6 +69,6 @@ struct NewTripView: View {
 
 #Preview {
     NewTripView()
-        .environment(TripStore())
+        .environment(TripStore(trips: Trip.samples))
         .environment(AuthViewModel(loadCurrentUser: false))
 }

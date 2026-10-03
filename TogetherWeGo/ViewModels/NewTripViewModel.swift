@@ -90,6 +90,7 @@ class NewTripViewModel {
                     startDate: startDate,
                     endDate: endDate,
                     budget: budget,
-                    memberIDs: [creatorID])
+                    memberIDs: [creatorID],
+                    createdBy: creatorID)
     }
 }
