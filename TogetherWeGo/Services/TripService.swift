@@ -53,4 +53,32 @@ struct TripService {
             "memberIDs": FieldValue.arrayUnion([userID])
         ])
     }
+    // MARK: - Checklist
+
+    private func checklist(_ tripID: String) -> CollectionReference {
+        db.collection("trips").document(tripID).collection("checklist")
+    }
+
+    func listenToChecklist(tripID: String,
+                           onChange: @escaping ([ChecklistItem]) -> Void) -> ListenerRegistration {
+        checklist(tripID).addSnapshotListener { snapshot, error in
+            guard let documents = snapshot?.documents else {
+                print("Checklist listener error: \(error?.localizedDescription ?? "unknown")")
+                return
+            }
+            onChange(documents.compactMap { try? $0.data(as: ChecklistItem.self) })
+        }
+    }
+
+    func addChecklistItem(_ item: ChecklistItem, tripID: String) throws {
+        try checklist(tripID).document(item.id).setData(from: item)
+    }
+
+    func setChecklistItem(_ itemID: String, done: Bool, tripID: String) {
+        checklist(tripID).document(itemID).updateData(["isDone": done])
+    }
+
+    func deleteChecklistItem(_ itemID: String, tripID: String) {
+        checklist(tripID).document(itemID).delete()
+    }
 }

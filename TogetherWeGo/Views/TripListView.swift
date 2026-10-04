@@ -9,16 +9,20 @@ struct TripListView: View {
     var body: some View {
         NavigationStack {
             List(store.trips) { trip in
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(trip.name)
-                        .font(.headline)
-                    Text(trip.destination)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    Text("\(trip.lengthInDays) days · \(trip.memberIDs.count) travelers · Code \(trip.joinCode)")
-                        .font(.caption)
+                NavigationLink {
+                    TripDetailView(tripID: trip.id)
+                } label: {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(trip.name)
+                            .font(.headline)
+                        Text(trip.destination)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Text("\(trip.lengthInDays) days · \(trip.memberIDs.count) travelers")
+                            .font(.caption)
+                    }
+                    .accessibilityElement(children: .combine)
                 }
-                .accessibilityElement(children: .combine)
             }
             .overlay {
                 if store.trips.isEmpty {
