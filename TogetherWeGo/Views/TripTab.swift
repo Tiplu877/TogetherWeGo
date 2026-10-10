@@ -45,7 +45,9 @@ struct TripDetailView: View {
                 switch selectedTab {
                 case .checklist:
                     ChecklistView(tripID: trip.id)
-                case .plan, .budget, .chat:
+                case .budget:
+                    BudgetView(trip: trip)
+                case .plan, .chat:
                     ContentUnavailableView(
                         "Coming soon",
                         systemImage: "hammer",

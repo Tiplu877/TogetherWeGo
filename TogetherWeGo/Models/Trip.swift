@@ -9,11 +9,15 @@ struct Trip: Identifiable, Codable {
     var budget: Double
     var memberIDs: [String]
     var createdBy: String
+    var memberNames: [String: String]? = nil   // user ID → display name
     var joinCode: String = Trip.makeJoinCode()
 
     var lengthInDays: Int {
         let days = Calendar.current.dateComponents([.day], from: startDate, to: endDate).day ?? 0
         return days + 1
+    }
+    func name(for userID: String) -> String {
+        memberNames?[userID] ?? "Traveler"
     }
 
     // No 0/O or 1/I, so codes are easy to read out loud

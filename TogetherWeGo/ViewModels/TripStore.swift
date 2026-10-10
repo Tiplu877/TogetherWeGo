@@ -38,8 +38,7 @@ class TripStore {
     }
 
     // Returns nil on success, or a message explaining what went wrong
-    func joinTrip(code rawCode: String, userID: String) async -> String? {
-        let code = rawCode.uppercased().trimmingCharacters(in: .whitespaces)
+    func joinTrip(code rawCode: String, userID: String, userName: String) async -> String? {        let code = rawCode.uppercased().trimmingCharacters(in: .whitespaces)
 
         // Syntactic: is it shaped like a code?
         guard code.count == 6, code.allSatisfy({ Trip.codeCharacters.contains($0) }) else {
@@ -51,7 +50,7 @@ class TripStore {
         }
 
         do {
-            try await service.joinTrip(code: code, userID: userID)
+            try await service.joinTrip(code: code, userID: userID, userName: userName)
             return nil
         } catch TripServiceError.codeNotFound {
             return "No trip uses that code. Double-check it with your friend."

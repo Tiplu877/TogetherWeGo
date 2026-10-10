@@ -56,7 +56,7 @@ struct JoinTripView: View {
     private func join() async {
         guard let userID = auth.userID else { return }
         isJoining = true
-        errorMessage = await store.joinTrip(code: code, userID: userID)
+        errorMessage = await store.joinTrip(code: code, userID: userID, userName: auth.displayName)
         isJoining = false
         if errorMessage == nil { dismiss() }
     }

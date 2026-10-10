@@ -44,13 +44,14 @@ struct TripService {
     }
 
     // Looks up the code, then adds this user to that trip's members
-    func joinTrip(code: String, userID: String) async throws {
+    func joinTrip(code: String, userID: String, userName: String) async throws {
         let codeDoc = try await db.collection("joinCodes").document(code).getDocument()
         guard let tripID = codeDoc.data()?["tripID"] as? String else {
             throw TripServiceError.codeNotFound
         }
         try await db.collection("trips").document(tripID).updateData([
-            "memberIDs": FieldValue.arrayUnion([userID])
+            "memberIDs": FieldValue.arrayUnion([userID]),
+            "memberNames.\(userID)": userName
         ])
     }
     // MARK: - Checklist
@@ -80,5 +81,37 @@ struct TripService {
 
     func deleteChecklistItem(_ itemID: String, tripID: String) {
         checklist(tripID).document(itemID).delete()
+    }
+    // MARK: - Shared listener helper
+
+    // One function that can listen to ANY collection of Codable items
+    private func listen<T: Decodable>(to query: Query, as type: T.Type,
+                                      onChange: @escaping ([T]) -> Void) -> ListenerRegistration {
+        query.addSnapshotListener { snapshot, error in
+            guard let documents = snapshot?.documents else {
+                print("Listener error: \(error?.localizedDescription ?? "unknown")")
+                return
+            }
+            onChange(documents.compactMap { try? $0.data(as: T.self) })
+        }
+    }
+
+    // MARK: - Expenses
+
+    private func expenses(_ tripID: String) -> CollectionReference {
+        db.collection("trips").document(tripID).collection("expenses")
+    }
+
+    func listenToExpenses(tripID: String,
+                          onChange: @escaping ([Expense]) -> Void) -> ListenerRegistration {
+        listen(to: expenses(tripID), as: Expense.self, onChange: onChange)
+    }
+
+    func addExpense(_ expense: Expense, tripID: String) throws {
+        try expenses(tripID).document(expense.id).setData(from: expense)
+    }
+
+    func deleteExpense(_ expenseID: String, tripID: String) {
+        expenses(tripID).document(expenseID).delete()
     }
 }

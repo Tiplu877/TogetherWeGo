@@ -51,7 +51,7 @@ struct NewTripView: View {
 
     private func save() {
         guard let userID = auth.userID else { return }
-        if let trip = form.makeTrip(creatorID: userID) {
+        if let trip = form.makeTrip(creatorID: userID, creatorName: auth.displayName) {
             store.addTrip(trip)
             dismiss()
         }

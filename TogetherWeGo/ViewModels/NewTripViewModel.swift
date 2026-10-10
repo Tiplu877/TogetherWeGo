@@ -82,7 +82,7 @@ class NewTripViewModel {
     }
 
     // Returns a new Trip if everything is valid, otherwise nil
-    func makeTrip(creatorID: String) -> Trip? {
+    func makeTrip(creatorID: String, creatorName: String) -> Trip? {
         showErrors = true
         guard isValid, let budget = budgetValue else { return nil }
         return Trip(name: trimmedName,
@@ -91,6 +91,6 @@ class NewTripViewModel {
                     endDate: endDate,
                     budget: budget,
                     memberIDs: [creatorID],
-                    createdBy: creatorID)
-    }
-}
+                    createdBy: creatorID,
+                    memberNames: [creatorID: creatorName])
+    }}
