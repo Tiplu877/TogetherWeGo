@@ -15,6 +15,7 @@ struct ChatMessage: Identifiable, Codable {
     var senderName: String
     var isAnnouncement: Bool = false
     var sentAt: Date = .now
+}
 
 extension Date {
     // "3:42 PM" if today, otherwise "Oct 10, 3:42 PM"
