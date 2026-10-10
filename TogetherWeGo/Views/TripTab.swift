@@ -47,11 +47,13 @@ struct TripDetailView: View {
                     ChecklistView(tripID: trip.id)
                 case .budget:
                     BudgetView(trip: trip)
-                case .plan, .chat:
+                case .chat:
+                    ChatView(tripID: trip.id)
+                case .plan:
                     ContentUnavailableView(
                         "Coming soon",
                         systemImage: "hammer",
-                        description: Text("We'll build the \(selectedTab.rawValue.lowercased()) tab next.")
+                        description: Text("We'll build the plan tab next.")
                     )
                 }
             }

@@ -114,4 +114,25 @@ struct TripService {
     func deleteExpense(_ expenseID: String, tripID: String) {
         expenses(tripID).document(expenseID).delete()
     }
+    // MARK: - Chat
+
+    private func messages(_ tripID: String) -> CollectionReference {
+        db.collection("trips").document(tripID).collection("messages")
+    }
+
+    // Only the newest 100 messages, oldest first
+    func listenToMessages(tripID: String,
+                          onChange: @escaping ([ChatMessage]) -> Void) -> ListenerRegistration {
+        listen(to: messages(tripID).order(by: "sentAt").limit(toLast: 100),
+               as: ChatMessage.self,
+               onChange: onChange)
+    }
+
+    func sendMessage(_ message: ChatMessage, tripID: String) throws {
+        try messages(tripID).document(message.id).setData(from: message)
+    }
+
+    func deleteMessage(_ messageID: String, tripID: String) {
+        messages(tripID).document(messageID).delete()
+    }
 }
