@@ -21,8 +21,9 @@ struct TripDetailView: View {
     @Environment(TripStore.self) private var store
     let tripID: String
 
-    @State private var selectedTab: TripTab = .checklist
+    @State private var selectedTab: TripTab = .plan
     @State private var copied = false
+    
 
     // Looked up live, so changes from other phones show up here too
     private var trip: Trip? {
@@ -43,18 +44,14 @@ struct TripDetailView: View {
                 .padding()
 
                 switch selectedTab {
-                case .checklist:
-                    ChecklistView(tripID: trip.id)
+                case .plan:
+                    PlanView(trip: trip)
                 case .budget:
                     BudgetView(trip: trip)
                 case .chat:
                     ChatView(tripID: trip.id)
-                case .plan:
-                    ContentUnavailableView(
-                        "Coming soon",
-                        systemImage: "hammer",
-                        description: Text("We'll build the plan tab next.")
-                    )
+                case .checklist:
+                    ChecklistView(tripID: trip.id)
                 }
             }
             .navigationTitle(trip.name)

@@ -13,8 +13,20 @@ struct Trip: Identifiable, Codable {
     var joinCode: String = Trip.makeJoinCode()
 
     var lengthInDays: Int {
-        let days = Calendar.current.dateComponents([.day], from: startDate, to: endDate).day ?? 0
+        let calendar = Calendar.current
+        let days = calendar.dateComponents([.day],
+                                           from: calendar.startOfDay(for: startDate),
+                                           to: calendar.startOfDay(for: endDate)).day ?? 0
         return days + 1
+    }
+
+    // Every date of the trip: [Mar 13, Mar 14, Mar 15, ...]
+    var days: [Date] {
+        let calendar = Calendar.current
+        let first = calendar.startOfDay(for: startDate)
+        return (0..<max(lengthInDays, 1)).compactMap {
+            calendar.date(byAdding: .day, value: $0, to: first)
+        }
     }
     func name(for userID: String) -> String {
         memberNames?[userID] ?? "Traveler"

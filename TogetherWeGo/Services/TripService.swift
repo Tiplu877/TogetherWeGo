@@ -135,4 +135,22 @@ struct TripService {
     func deleteMessage(_ messageID: String, tripID: String) {
         messages(tripID).document(messageID).delete()
     }
+    // MARK: - Itinerary
+
+    private func activities(_ tripID: String) -> CollectionReference {
+        db.collection("trips").document(tripID).collection("activities")
+    }
+
+    func listenToActivities(tripID: String,
+                            onChange: @escaping ([Activity]) -> Void) -> ListenerRegistration {
+        listen(to: activities(tripID), as: Activity.self, onChange: onChange)
+    }
+
+    func addActivity(_ activity: Activity, tripID: String) throws {
+        try activities(tripID).document(activity.id).setData(from: activity)
+    }
+
+    func deleteActivity(_ activityID: String, tripID: String) {
+        activities(tripID).document(activityID).delete()
+    }
 }
