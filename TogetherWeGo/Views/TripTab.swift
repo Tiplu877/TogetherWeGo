@@ -19,6 +19,7 @@ enum TripTab: String, CaseIterable, Identifiable {
 
 struct TripDetailView: View {
     @Environment(TripStore.self) private var store
+    @Environment(\.openURL) private var openURL
     let tripID: String
 
     @State private var selectedTab: TripTab = .plan
@@ -57,8 +58,22 @@ struct TripDetailView: View {
             .navigationTitle(trip.name)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ShareLink(item: inviteMessage(for: trip)) {
-                    Label("Invite", systemImage: "square.and.arrow.up")
+                Menu {
+                    ShareLink(item: trip.inviteURL, message: Text(trip.inviteMessage)) {
+                        Label("Share…", systemImage: "square.and.arrow.up")
+                    }
+                    Button {
+                        open("sms:&body=\(encoded(trip.inviteMessage))")
+                    } label: {
+                        Label("Text Message", systemImage: "message.fill")
+                    }
+                    Button {
+                        open("https://wa.me/?text=\(encoded(trip.inviteMessage))")
+                    } label: {
+                        Label("WhatsApp", systemImage: "phone.bubble.fill")
+                    }
+                } label: {
+                    Label("Invite", systemImage: "person.badge.plus")
                 }
             }
         } else {
@@ -98,10 +113,16 @@ struct TripDetailView: View {
         .padding(.horizontal)
     }
 
-    private func inviteMessage(for trip: Trip) -> String {
-        "Join my trip \"\(trip.name)\" to \(trip.destination) on TogetherWeGo! Open the app, tap + → Join with Code, and enter: \(trip.joinCode)"
+    // Makes text safe to put inside a link (spaces → %20, etc.)
+    private func encoded(_ text: String) -> String {
+        text.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? ""
     }
-}
+
+    private func open(_ address: String) {
+        if let url = URL(string: address) {
+            openURL(url)
+        }
+    }}
 
 #Preview {
     NavigationStack {

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Join my trip on TogetherWeGo</title>
+  <meta property="og:title" content="You're invited to a trip on TogetherWeGo">
+  <meta property="og:description" content="Plan together: shared itinerary, budget, chat and packing list.">
+  <style>
+    body { font-family: -apple-system, system-ui, sans-serif; margin: 0; min-height: 100vh;
+           display: grid; place-items: center; background: #f2f4f8; color: #1c1c1e; }
+    .card { background: white; border-radius: 20px; padding: 32px 24px; max-width: 360px;
+            margin: 16px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,.08); }
+    .code { font: 700 36px ui-monospace, Menlo, monospace; letter-spacing: 6px; margin: 16px 0; }
+    .button { display: block; background: #2563eb; color: white; text-decoration: none;
+              padding: 14px; border-radius: 12px; font-weight: 600; }
+    .hint { color: #6b7280; font-size: 14px; margin-top: 16px; }
+    @media (prefers-color-scheme: dark) {
+      body { background: #000; color: #f2f2f7; }
+      .card { background: #1c1c1e; }
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>You're invited!</h1>
+    <p>Join the trip in TogetherWeGo with this code:</p>
+    <div class="code" id="code">------</div>
+    <a class="button" id="open" href="#">Open in TogetherWeGo</a>
+    <p class="hint">Don't have the app yet? Install TogetherWeGo, then tap
+      <b>+ → Join with Code</b> and enter the code above.</p>
+  </main>
+
+  <script>
+    // Read the code from the address, e.g. /join/K7QX2M
+    const raw = location.pathname.split("/").pop().toUpperCase();
+    const isValid = /^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$/.test(raw);
+
+    const codeEl = document.getElementById("code");
+    const openEl = document.getElementById("open");
+
+    if (isValid) {
+      codeEl.textContent = raw;   // textContent, never innerHTML, so links can't inject code
+      openEl.href = "togetherwego://join/" + raw;
+    } else {
+      codeEl.textContent = "Invalid link";
+      openEl.style.display = "none";
+    }
+  </script>
+</body>
+</html>

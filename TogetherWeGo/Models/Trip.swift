@@ -38,6 +38,13 @@ struct Trip: Identifiable, Codable {
     static func makeJoinCode() -> String {
         String((0..<6).map { _ in codeCharacters.randomElement()! })
     }
+    var inviteURL: URL {
+        URL(string: "\(AppConfig.webBaseURL)/join/\(joinCode)")!
+    }
+
+    var inviteMessage: String {
+        "Join my trip \"\(name)\" to \(destination) on TogetherWeGo! Tap to join: \(inviteURL.absoluteString)"
+    }
 }
 
 extension Trip {

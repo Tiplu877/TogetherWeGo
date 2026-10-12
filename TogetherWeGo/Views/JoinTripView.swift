@@ -12,6 +12,7 @@ struct JoinTripView: View {
     @Environment(TripStore.self) private var store
     @Environment(AuthViewModel.self) private var auth
     @Environment(\.dismiss) private var dismiss
+    var initialCode: String = ""
 
     @State private var code = ""
     @State private var errorMessage: String?
@@ -38,6 +39,9 @@ struct JoinTripView: View {
             }
             .navigationTitle("Join a Trip")
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                if code.isEmpty { code = initialCode }
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
@@ -63,7 +67,7 @@ struct JoinTripView: View {
 }
 
 #Preview {
-    JoinTripView()
+    JoinTripView(initialCode: "K7QX2M")
         .environment(TripStore())
         .environment(AuthViewModel(loadCurrentUser: false))
 }

@@ -3,6 +3,7 @@ import SwiftUI
 struct TripListView: View {
     @Environment(TripStore.self) private var store
     @Environment(AuthViewModel.self) private var auth
+    @Environment(DeepLinkRouter.self) private var router
     @State private var showingNewTrip = false
     @State private var showingJoinTrip = false
 
@@ -59,7 +60,16 @@ struct TripListView: View {
                 }
             }
             .sheet(isPresented: $showingNewTrip) { NewTripView() }
-            .sheet(isPresented: $showingJoinTrip) { JoinTripView() }
+            .sheet(isPresented: $showingJoinTrip, onDismiss: {
+                router.pendingJoinCode = nil
+            }) {
+                JoinTripView(initialCode: router.pendingJoinCode ?? "")
+            }
+            .onChange(of: router.pendingJoinCode, initial: true) {
+                if router.pendingJoinCode != nil {
+                    showingJoinTrip = true
+                }
+            }
             .task(id: auth.userID) {
                 if let userID = auth.userID {
                     store.startListening(userID: userID)
@@ -73,4 +83,5 @@ struct TripListView: View {
     TripListView()
         .environment(TripStore(trips: Trip.samples))
         .environment(AuthViewModel(loadCurrentUser: false))
+        .environment(DeepLinkRouter())
 }

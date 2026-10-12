@@ -5,6 +5,7 @@ import FirebaseCore
 struct MyApp: App {
     @State private var store = TripStore()
     @State private var auth: AuthViewModel
+    @State private var router = DeepLinkRouter()
 
     init() {
         FirebaseApp.configure()                          // must run FIRST
@@ -22,6 +23,12 @@ struct MyApp: App {
             }
             .environment(store)
             .environment(auth)
+            .environment(store)
+            .environment(auth)
+            .environment(router)
+            .onOpenURL { url in
+                router.handle(url)
+            }
         }
     }
 }
