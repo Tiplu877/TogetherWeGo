@@ -9,6 +9,7 @@ import SwiftUI
 
 enum TripTab: String, CaseIterable, Identifiable {
     case plan = "Plan"
+    case map = "Map"
     case budget = "Budget"
     case chat = "Chat"
     case checklist = "Checklist"
@@ -52,6 +53,8 @@ struct TripDetailView: View {
                     ChatView(tripID: trip.id)
                 case .checklist:
                     ChecklistView(tripID: trip.id)
+                case .map:
+                    TripMapView(trip: trip)
                 }
             }
             .navigationTitle(trip.name)

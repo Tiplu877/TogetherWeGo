@@ -153,4 +153,22 @@ struct TripService {
     func deleteActivity(_ activityID: String, tripID: String) {
         activities(tripID).document(activityID).delete()
     }
+    // MARK: - Map places
+
+    private func places(_ tripID: String) -> CollectionReference {
+        db.collection("trips").document(tripID).collection("places")
+    }
+
+    func listenToPlaces(tripID: String,
+                        onChange: @escaping ([Place]) -> Void) -> ListenerRegistration {
+        listen(to: places(tripID), as: Place.self, onChange: onChange)
+    }
+
+    func addPlace(_ place: Place, tripID: String) throws {
+        try places(tripID).document(place.id).setData(from: place)
+    }
+
+    func deletePlace(_ placeID: String, tripID: String) {
+        places(tripID).document(placeID).delete()
+    }
 }
