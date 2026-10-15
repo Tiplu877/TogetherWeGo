@@ -5,7 +5,6 @@
 //  Created by Aaryaman on 10/4/26.
 //
 
-
 import SwiftUI
 
 enum TripTab: String, CaseIterable, Identifiable {
@@ -24,7 +23,7 @@ struct TripDetailView: View {
 
     @State private var selectedTab: TripTab = .plan
     @State private var copied = false
-    
+    @State private var showingInstagramMissing = false
 
     // Looked up live, so changes from other phones show up here too
     private var trip: Trip? {
@@ -72,14 +71,26 @@ struct TripDetailView: View {
                     } label: {
                         Label("WhatsApp", systemImage: "phone.bubble.fill")
                     }
+                    Button {
+                        shareToInstagram(trip)
+                    } label: {
+                        Label("Instagram Story", systemImage: "camera.circle.fill")
+                    }
                 } label: {
                     Label("Invite", systemImage: "person.badge.plus")
                 }
+            }
+            .alert("Instagram isn't installed", isPresented: $showingInstagramMissing) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text("Install Instagram to share your trip to your story.")
             }
         } else {
             ContentUnavailableView("Trip not found", systemImage: "questionmark.folder")
         }
     }
+
+    // MARK: - Header
 
     private func header(for trip: Trip) -> some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -113,6 +124,8 @@ struct TripDetailView: View {
         .padding(.horizontal)
     }
 
+    // MARK: - Sharing helpers
+
     // Makes text safe to put inside a link (spaces → %20, etc.)
     private func encoded(_ text: String) -> String {
         text.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? ""
@@ -122,7 +135,22 @@ struct TripDetailView: View {
         if let url = URL(string: address) {
             openURL(url)
         }
-    }}
+    }
+
+    // Draws the trip card as an image and opens Instagram's story editor
+    private func shareToInstagram(_ trip: Trip) {
+        let renderer = ImageRenderer(content: TripStoryCard(trip: trip))
+        renderer.scale = 3   // sharp on iPhone screens
+        guard let image = renderer.uiImage else { return }
+
+        let shared = InstagramSharer.shareToStory(stickerImage: image,
+                                                  topColor: "#1E3A8A",
+                                                  bottomColor: "#F97316")
+        if !shared {
+            showingInstagramMissing = true
+        }
+    }
+}
 
 #Preview {
     NavigationStack {

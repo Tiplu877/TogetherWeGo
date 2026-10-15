@@ -10,4 +10,6 @@ import Foundation
 
 enum AppConfig {
     static let webBaseURL = "https://togetherwego-a15b1.web.app"
+    static let facebookAppID = "1475049108018773"
+
 }
